@@ -3,23 +3,26 @@ package eeddg10.susalud;
 import static eeddg10.susalud.Main.getPacientesPAtendidos;
 import static eeddg10.susalud.Main.incrementarPacientesPAtendidos;
 import static eeddg10.susalud.Main.reestablecerPacientesPAtendidos;
+import java.awt.Color;
 import javax.swing.JOptionPane;
 
 public class AtenderPacientes {
-    
+
+    private static QuejasPila quejasPila = new QuejasPila(); // Declaración fuera del método
+
     public static void gestionarLlegadaPacientes(Cola preferenciales, Cola regulares) {
         int subOption = -1;
 
         while (subOption != 6) {
             try {
                 String input = JOptionPane.showInputDialog(
-                        "Seleccione una opción para Gestionar Llegada de Pacientes:\n" +
-                        "1. Seleccionar Ficha\n" +
-                        "2. Atender Paciente\n" +
-                        "3. Abandonar Cola de Pacientes\n" +
-                        "4. Mostrar Fichas Pendientes\n" +
-                        "5. Mostrar Quejas recibidas\n" +
-                        "6. Regresar"
+                        "Seleccione una opción para Gestionar Llegada de Pacientes:\n"
+                        + "1. Seleccionar Ficha\n"
+                        + "2. Atender Paciente\n"
+                        + "3. Abandonar Cola de Pacientes\n"
+                        + "4. Mostrar Fichas Pendientes\n"
+                        + "5. Mostrar Quejas recibidas\n"
+                        + "6. Regresar"
                 );
 
                 if (input == null) {
@@ -36,13 +39,13 @@ public class AtenderPacientes {
                             // Lógica para la opción 2
                             break;
                         case 3:
-                            // Lógica para la opción 3
+                            abandonarCola(preferenciales, regulares);
                             break;
                         case 4:
-                            // Lógica para la opción 4
+                            mostrarFichasPendientes(preferenciales, regulares);
                             break;
                         case 5:
-                            // Lógica para la opción 5
+                            mostrarQuejasRecibidas();
                             break;
                         // No es necesario agregar un caso para la opción 6, ya que el bucle se romperá
                         default:
@@ -55,7 +58,7 @@ public class AtenderPacientes {
             }
         }
     }
-    
+
     private static void seleccionarFicha(Cola preferenciales, Cola regulares) {
         Object[] options = {"1. Paciente Regular", "2. Paciente Preferencial", "3. Regresar"};
         int result = JOptionPane.showOptionDialog(null, "Seleccione una opción:",
@@ -64,7 +67,7 @@ public class AtenderPacientes {
 
         if (result == JOptionPane.YES_OPTION) {
             String nuevaFicha = "R1";
-            if(!regulares.esVacia()){
+            if (!regulares.esVacia()) {
                 String fichaActual = regulares.getCima().getPaciente().getFicha();
                 // Utilizar expresión regular para extraer el número de la ficha actual
                 String numeroActual = fichaActual.replaceAll("[^0-9]", "");
@@ -80,7 +83,7 @@ public class AtenderPacientes {
             agregarPaciente(regulares, "R", nuevaFicha);
         } else if (result == JOptionPane.NO_OPTION) {
             String nuevaFicha = "P1";
-            if(!preferenciales.esVacia()){
+            if (!preferenciales.esVacia()) {
                 String fichaActual = preferenciales.getCima().getPaciente().getFicha();
                 // Utilizar expresión regular para extraer el número de la ficha actual
                 String numeroActual = fichaActual.replaceAll("[^0-9]", "");
@@ -96,7 +99,44 @@ public class AtenderPacientes {
             agregarPaciente(preferenciales, "P", nuevaFicha);
         }
     }
-    
+
+    private static void abandonarCola(Cola preferenciales, Cola regulares) {
+        String fichaAbandonar = JOptionPane.showInputDialog("Ingrese el número de ficha a abandonar:");
+
+        if (buscarYEliminarFicha(preferenciales, fichaAbandonar)) {
+            String queja = JOptionPane.showInputDialog("Por favor, ingrese la queja correspondiente a la ficha #" + fichaAbandonar + ":");
+            quejasPila.agregarQuejas("Ficha #" + fichaAbandonar + " de la cola preferencial abandonó la cola sin ser atendido (a). Queja: " + queja);
+            JOptionPane.showMessageDialog(null, "Ficha #" + fichaAbandonar + " de la cola preferencial abandona la cola sin ser atendido (a). Queja registrada.");
+        } else if (buscarYEliminarFicha(regulares, fichaAbandonar)) {
+            String queja = JOptionPane.showInputDialog("Por favor, ingrese la queja correspondiente a la ficha #" + fichaAbandonar + ":");
+            quejasPila.agregarQuejas("Ficha #" + fichaAbandonar + " de la cola regular abandonó la cola sin ser atendido (a). Queja: " + queja);
+            JOptionPane.showMessageDialog(null, "Ficha #" + fichaAbandonar + " de la cola regular abandona la cola sin ser atendido (a). Queja registrada.");
+        } else {
+            JOptionPane.showMessageDialog(null, "La ficha #" + fichaAbandonar + " no se encontró en ninguna cola.");
+        }
+    }
+
+    private static boolean buscarYEliminarFicha(Cola cola, String ficha) {
+        Cola tempCola = new Cola();
+        boolean encontrada = false;
+
+        while (!cola.esVacia()) {
+            NodoCola pacienteEnTurno = cola.salirDeCola();
+            if (!pacienteEnTurno.getPaciente().getFicha().equals(ficha)) {
+                tempCola.encola(pacienteEnTurno);
+            } else {
+                encontrada = true;
+            }
+        }
+
+        // Restaurar la cola original
+        while (!tempCola.esVacia()) {
+            cola.encola(tempCola.salirDeCola());
+        }
+
+        return encontrada;
+    }
+
     private static void agregarPaciente(Cola cola, String tipo, String ficha) {
         Paciente paciente = new Paciente();
         paciente.setFicha(ficha);
@@ -106,11 +146,11 @@ public class AtenderPacientes {
         cola.encola(new NodoCola(paciente));
         JOptionPane.showMessageDialog(null, "Su número de ficha es: " + ficha);
     }
-    
+
     private static void atenderPaciente(Cola preferenciales, Cola regulares) {
         // Lógica para atender al paciente según las reglas especificadas
-        
-        if(preferenciales.esVacia() && regulares.esVacia()){
+
+        if (preferenciales.esVacia() && regulares.esVacia()) {
             JOptionPane.showMessageDialog(null, "No hay pacientes en espera.");
         }
 
@@ -118,7 +158,7 @@ public class AtenderPacientes {
         if (getPacientesPAtendidos() < 2 && !preferenciales.esVacia()) {
             atenderPacienteEnTurno(preferenciales);
             incrementarPacientesPAtendidos();
-        }else{
+        } else {
             if (!regulares.esVacia()) {
                 atenderPacienteEnTurno(regulares);
                 reestablecerPacientesPAtendidos();
@@ -129,7 +169,49 @@ public class AtenderPacientes {
     private static void atenderPacienteEnTurno(Cola cola) {
         NodoCola pacienteEnTurno = cola.salirDeCola();
         Paciente paciente = pacienteEnTurno.getPaciente();
-        JOptionPane.showMessageDialog(null, "Ficha #" + paciente.getFicha() +
-                " con cédula " + paciente.getCedula() + " pasar a consulta médica.");
+        JOptionPane.showMessageDialog(null, "Ficha #" + paciente.getFicha()
+                + " con cédula " + paciente.getCedula() + " pasar a consulta médica.");
     }
+
+    private static void mostrarFichasPendientes(Cola preferenciales, Cola regulares) {
+        // Mostrar en verde las fichas de tipo Paciente Regular
+        System.out.println("Fichas Pendientes de Pacientes Regulares (verde):");
+        mostrarFichasCola(regulares, Color.GREEN);
+
+        // Mostrar en naranja las fichas de tipo Paciente Preferencial
+        System.out.println("Fichas Pendientes de Pacientes Preferenciales (naranja):");
+        mostrarFichasCola(preferenciales, Color.ORANGE);
+    }
+
+    private static void mostrarFichasCola(Cola cola, Color color) {
+        Cola tempCola = new Cola();
+        while (!cola.esVacia()) {
+            NodoCola pacienteEnTurno = cola.salirDeCola();
+            Paciente paciente = pacienteEnTurno.getPaciente();
+            String mensaje = "Ficha #" + paciente.getFicha()
+                    + " con cédula " + paciente.getCedula() + " pendiente de atención.";
+
+            // Imprimir mensaje en consola
+            System.out.println(mensaje);
+
+            // Mostrar mensaje en JOptionPane con color especificado
+            mostrarMensajeJOptionPane(mensaje, color);
+
+            tempCola.encola(pacienteEnTurno);
+        }
+
+        // Restaurar la cola original
+        while (!tempCola.esVacia()) {
+            cola.encola(tempCola.salirDeCola());
+        }
+    }
+
+    private static void mostrarMensajeJOptionPane(String mensaje, Color color) {
+        JOptionPane.showMessageDialog(null, mensaje, "Ficha Pendiente", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private static void mostrarQuejasRecibidas() {
+        JOptionPane.showMessageDialog(null, "Quejas Recibidas:\n\n" + quejasPila.toString());
+    }
+
 }

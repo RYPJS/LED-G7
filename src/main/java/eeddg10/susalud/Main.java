@@ -48,7 +48,7 @@ public class Main {
                         break;
                     case 2:
                         //Mostrar mensaje de ayuda
-                        JOptionPane.showMessageDialog(null, "Avance 1 V 1.0.1\nDesarrollado por:\n"+"Robert NS\n");
+                        JOptionPane.showMessageDialog(null, "Avance 1 V 1.0.1");
                         break;
                     case 3:
                         mainOption = 0;
