@@ -5,11 +5,9 @@ import javax.swing.JOptionPane;
 
 public class BitacoraLista {
     private NodoLS cabeza;
-    private NodoLS ultimo;
 
     public BitacoraLista(){
         this.cabeza = null;
-        this.ultimo = null;
     }
     
     public boolean esVacia(){
@@ -32,8 +30,6 @@ public class BitacoraLista {
         if(cabeza == null)
         {
             cabeza = new NodoLS(bitacora);
-            ultimo = cabeza;
-            ultimo.setSiguiente(cabeza);
         }
         else
         {
@@ -43,23 +39,21 @@ public class BitacoraLista {
                 NodoLS auxiliar = new NodoLS(bitacora);
                 auxiliar.setSiguiente(cabeza);
                 cabeza = auxiliar;
-                ultimo.setSiguiente(cabeza);
             }
             else
             {
-                if(ultimo.getBitacora().getCedula() < bitacora.getCedula())
+                if(cabeza.getSiguiente() == null)
                 {
                     //Insertamos al final
                     NodoLS auxiliar = new NodoLS(bitacora);
-                    ultimo.setSiguiente(auxiliar);
-                    ultimo = auxiliar;
-                    ultimo.setSiguiente(cabeza);
+                    cabeza.setSiguiente(auxiliar);
                 }
                 else
                 {
                     //Insertamos en el medio de la lista
                     NodoLS auxiliar = cabeza;
-                    while(auxiliar.getSiguiente().getBitacora().getCedula() < bitacora.getCedula())
+                    while(auxiliar.getSiguiente() != null && 
+                          auxiliar.getSiguiente().getBitacora().getCedula() < bitacora.getCedula())
                     {
                         auxiliar = auxiliar.getSiguiente();
                     }
@@ -74,24 +68,13 @@ public class BitacoraLista {
     
     @Override
     public String toString() {
-        String respuesta = "Lista circular: \n";
-        
         NodoLS auxiliar = cabeza;
+        String respuesta = "Lista: \n";
         
-        if(auxiliar != null)
+        while(auxiliar != null)
         {
-            //Para determinar que no está vacía
             respuesta += auxiliar.toString() + "\n";
             auxiliar = auxiliar.getSiguiente();
-            while(auxiliar != cabeza)
-            {
-                respuesta += auxiliar.toString() + "\n";
-                auxiliar = auxiliar.getSiguiente();
-            }
-        }
-        else
-        {
-            respuesta += "Vacía";
         }
         
         return respuesta;
