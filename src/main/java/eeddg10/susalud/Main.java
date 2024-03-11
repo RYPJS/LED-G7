@@ -26,14 +26,18 @@ public class Main {
         int mainOption = -1; // Inicializamos con un valor diferente de 0 para que entre al bucle
         
         AtenderPacientes atenderPacientes = new AtenderPacientes();
+        ExpedienteUnico expedienteUnico = new ExpedienteUnico();
+        BitacoraLista bitacoraLista = new BitacoraLista();
 
         while (mainOption != 0) {
             try {
                 String input = JOptionPane.showInputDialog(
                         "Seleccione una opción:\n" +
                         "1. Gestionar Llegada de Pacientes\n" +
-                        "2. Ayuda\n" +
-                        "3. Salir"
+                        "2. Consulta de Bitácora de Citas del día\n" +
+                        "3. Consulta de Expediente único de Pacientes\n" +
+                        "4. Ayuda\n" +
+                        "5. Salir"
                 );
  
                 if (input == null) {
@@ -44,13 +48,17 @@ public class Main {
                 
                 switch(mainOption){
                     case 1:
-                        atenderPacientes.gestionarLlegadaPacientes(preferenciales, regulares);
+                        atenderPacientes.gestionarLlegadaPacientes(preferenciales, regulares, expedienteUnico, bitacoraLista);
                         break;
                     case 2:
+                        break;
+                    case 3:
+                        break;
+                    case 4:
                         //Mostrar mensaje de ayuda
                         JOptionPane.showMessageDialog(null, "Avance 1 V 1.0.1");
                         break;
-                    case 3:
+                    case 5:
                         mainOption = 0;
                         break;
                 }

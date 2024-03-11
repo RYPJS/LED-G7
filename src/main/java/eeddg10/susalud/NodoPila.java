@@ -1,13 +1,5 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package eeddg10.susalud;
 
-/**
- *
- * @author kenda
- */
 public class NodoPila {
     private String queja;
     private NodoPila siguiente;
@@ -26,6 +18,5 @@ public class NodoPila {
 
     public void setSiguiente(NodoPila siguiente) {
         this.siguiente = siguiente;
-    }
-    
+    } 
 }

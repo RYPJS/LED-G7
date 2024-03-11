@@ -10,7 +10,7 @@ public class AtenderPacientes {
 
     private static QuejasPila quejasPila = new QuejasPila(); // Declaración fuera del método
 
-    public static void gestionarLlegadaPacientes(Cola preferenciales, Cola regulares) {
+    public static void gestionarLlegadaPacientes(Cola preferenciales, Cola regulares, ExpedienteUnico expedienteUnico, BitacoraLista bitacoraLista) {
         int subOption = -1;
 
         while (subOption != 6) {
@@ -35,8 +35,12 @@ public class AtenderPacientes {
                             seleccionarFicha(preferenciales, regulares);
                             break;
                         case 2:
-                            atenderPaciente(preferenciales, regulares);
-                            // Lógica para la opción 2
+                            Paciente paciente = atenderPaciente(preferenciales, regulares);
+                            if(paciente != null){
+                                expedienteUnico.insertaPaciente();
+                                bitacoraLista.insertarBitacora(paciente);
+                                JOptionPane.showMessageDialog(null, "Paciente " + paciente.getNombreCompleto() + " su cita ha concluido");
+                            }
                             break;
                         case 3:
                             abandonarCola(preferenciales, regulares);
@@ -140,37 +144,52 @@ public class AtenderPacientes {
     private static void agregarPaciente(Cola cola, String tipo, String ficha) {
         Paciente paciente = new Paciente();
         paciente.setFicha(ficha);
-        paciente.setCedula(JOptionPane.showInputDialog("Ingrese el número de cédula del paciente: "));
+        Boolean error = false;
+        do{
+            try{
+                paciente.setCedula(Integer.parseInt(JOptionPane.showInputDialog("Ingrese el número de cédula del paciente: ")));
+                error = false;
+            }catch(Exception e){
+                JOptionPane.showMessageDialog(null, "Solo se permite ingresar valores numericos");
+                error = true;
+            }
+        }while(error == true);
         paciente.setNombreCompleto(JOptionPane.showInputDialog("Ingrese el nombre del paciente: "));
         paciente.setTipo(tipo);
         cola.encola(new NodoCola(paciente));
         JOptionPane.showMessageDialog(null, "Su número de ficha es: " + ficha);
     }
 
-    private static void atenderPaciente(Cola preferenciales, Cola regulares) {
+    private static Paciente atenderPaciente(Cola preferenciales, Cola regulares) {
         // Lógica para atender al paciente según las reglas especificadas
 
         if (preferenciales.esVacia() && regulares.esVacia()) {
             JOptionPane.showMessageDialog(null, "No hay pacientes en espera.");
-        }
+        }else{
+            Paciente paciente = null;
 
-        //Valida que se hayan atendido menos de 2 preferenciales y que hayan pacientes en preferenciales
-        if (getPacientesPAtendidos() < 2 && !preferenciales.esVacia()) {
-            atenderPacienteEnTurno(preferenciales);
-            incrementarPacientesPAtendidos();
-        } else {
-            if (!regulares.esVacia()) {
-                atenderPacienteEnTurno(regulares);
-                reestablecerPacientesPAtendidos();
+            //Valida que se hayan atendido menos de 2 preferenciales y que hayan pacientes en preferenciales
+            if (getPacientesPAtendidos() < 2 && !preferenciales.esVacia()) {
+                paciente = atenderPacienteEnTurno(preferenciales);
+                incrementarPacientesPAtendidos();
+            } else {
+                if (!regulares.esVacia()) {
+                    paciente = atenderPacienteEnTurno(regulares);
+                    reestablecerPacientesPAtendidos();
+                }
             }
+            return paciente;
         }
+        return null;
     }
 
-    private static void atenderPacienteEnTurno(Cola cola) {
+    private static Paciente atenderPacienteEnTurno(Cola cola) {
         NodoCola pacienteEnTurno = cola.salirDeCola();
         Paciente paciente = pacienteEnTurno.getPaciente();
-        JOptionPane.showMessageDialog(null, "Ficha #" + paciente.getFicha()
-                + " con cédula " + paciente.getCedula() + " pasar a consulta médica.");
+        mostrarInfoPaciente(paciente);
+        return paciente;
+        /*JOptionPane.showMessageDialog(null, "Ficha #" + paciente.getFicha()
+                + " con cédula " + paciente.getCedula() + " pasar a consulta médica.");*/
     }
 
     private static void mostrarFichasPendientes(Cola preferenciales, Cola regulares) {
@@ -212,6 +231,10 @@ public class AtenderPacientes {
 
     private static void mostrarQuejasRecibidas() {
         JOptionPane.showMessageDialog(null, "Quejas Recibidas:\n\n" + quejasPila.toString());
+    }
+    
+    private static void mostrarInfoPaciente(Paciente paciente){
+        JOptionPane.showMessageDialog(null, "Información del paciente \n Nombre: "+paciente.getNombreCompleto()+"\n Cedula: "+paciente.getCedula()+"\n Tipo de Paciente: "+paciente.getTipo()+"\n Ficha: "+paciente.getFicha());
     }
 
 }

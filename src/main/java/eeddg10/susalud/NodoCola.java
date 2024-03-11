@@ -9,7 +9,7 @@ public class NodoCola {
     }
     
     public NodoCola() {
-        this.paciente = new Paciente("", "", "", "");
+        this.paciente = new Paciente("", 0, "", "");
     }
     
     public Paciente getPaciente() {
