@@ -1,5 +1,8 @@
 package eeddg10.susalud;
-
+/**
+ * La clase NodoLS representa un nodo en una lista simple de bitácoras.
+ * Cada objeto NodoLS contiene una bitácora y una referencia al nodo siguiente en la lista.
+ */
 public class NodoLS {
     
     private NodoLS siguiente;

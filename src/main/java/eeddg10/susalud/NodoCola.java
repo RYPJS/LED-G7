@@ -1,5 +1,8 @@
 package eeddg10.susalud;
-
+/**
+ * La clase NodoCola representa un nodo en una cola de pacientes.
+ * Cada objeto NodoCola contiene un paciente y una referencia al nodo anterior en la cola.
+ */
 public class NodoCola {
     private Paciente paciente;
     private NodoCola atras;

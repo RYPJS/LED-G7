@@ -1,12 +1,8 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-package eeddg10.susalud;
 
+package eeddg10.susalud;
 /**
- *
- * @author kenda
+ * La clase QuejasPila representa una pila de quejas.
+ * Cada objeto QuejasPila contiene una referencia al nodo superior de la pila (tope).
  */
 public class QuejasPila {
 

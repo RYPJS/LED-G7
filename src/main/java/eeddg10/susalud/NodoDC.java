@@ -1,5 +1,8 @@
 package eeddg10.susalud;
-
+/**
+ * La clase NodoDC representa un nodo en una lista doblemente enlazada de expedientes.
+ * Cada objeto NodoDC contiene un expediente y una referencia al nodo siguiente y anterior en la lista.
+ */
 public class NodoDC {
     private Expediente expediente;
     private NodoDC siguiente;
