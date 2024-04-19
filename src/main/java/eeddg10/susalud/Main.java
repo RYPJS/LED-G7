@@ -53,7 +53,7 @@ public class Main {
         ExpedienteUnico expedienteUnico = new ExpedienteUnico();
         BitacoraLista bitacoraLista = new BitacoraLista();
         ConsultaBitacoraCitas consultaBitacora = new ConsultaBitacoraCitas(bitacoraLista);
-
+        ChatBot chatBot = new ChatBot();
 
         while (mainOption != 0) {
             try {
@@ -62,8 +62,9 @@ public class Main {
                                 "1. Gestionar Llegada de Pacientes\n" +
                                 "2. Consulta de Bitácora de Citas del día\n" +
                                 "3. Consulta de Expediente único de Pacientes\n" +
-                                "4. Ayuda\n" +
-                                "5. Salir"
+                                "4. Chat bot\n" +
+                                "5. Ayuda\n" +
+                                "6. Salir"
                 );
 
                 if (input == null) {
@@ -83,12 +84,17 @@ public class Main {
                         expedienteUnico.consultarExpedientes(); // Aquí se agrega la opción de consulta de expedientes
                         break;
                     case 4:
+                        chatBot.subMenu();
+                        break;
+                    case 5:
                         //Mostrar mensaje de ayuda
                         JOptionPane.showMessageDialog(null, "Avance 1 V 1.0.1");
                         break;
-                    case 5:
+                    case 6:
                         mainOption = 0;
                         break;
+                    default:
+                        JOptionPane.showMessageDialog(null, "Opción no válida. Por favor, elige una opción disponible.");
                 }
             } catch (NumberFormatException e) {
                 JOptionPane.showMessageDialog(null, "Ingrese un número válido.");
